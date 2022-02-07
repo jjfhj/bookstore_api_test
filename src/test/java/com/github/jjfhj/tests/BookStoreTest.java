@@ -1,17 +1,16 @@
 package com.github.jjfhj.tests;
 
+import com.codeborne.selenide.logevents.SelenideLogger;
 import com.github.jjfhj.JiraIssue;
 import com.github.jjfhj.JiraIssues;
 import com.github.jjfhj.Layer;
 import com.github.jjfhj.Microservice;
-import com.github.jjfhj.config.CredentialsConfig;
+import com.github.jjfhj.config.Credentials;
 import io.qameta.allure.*;
-import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Tags;
-import org.junit.jupiter.api.Test;
+import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.*;
 
+import static com.github.jjfhj.filters.CustomLogFilter.customLogFilter;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -25,9 +24,13 @@ import static org.hamcrest.Matchers.*;
 @DisplayName("Тестирование веб-приложения Book Store")
 public class BookStoreTest {
 
-    private static final CredentialsConfig CREDENTIALS_CONFIG = ConfigFactory.create(CredentialsConfig.class, System.getProperties());
-    private static final String USER_NAME = CREDENTIALS_CONFIG.userName();
-    private static final String PASSWORD = CREDENTIALS_CONFIG.password();
+    public static final String USER_NAME = Credentials.CREDENTIALS_CONFIG.userName();
+    public static final String PASSWORD = Credentials.CREDENTIALS_CONFIG.password();
+
+    @BeforeAll
+    static void setup() {
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
+    }
 
     @Test
     @DisplayName("Успешная авторизация через UserName и Password")
@@ -43,6 +46,7 @@ public class BookStoreTest {
                 "  \"password\": \"" + PASSWORD + "\"}";
 
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .baseUri("https://demoqa.com")
                 .body(data)
@@ -67,6 +71,7 @@ public class BookStoreTest {
                 "  \"password\": \"" + PASSWORD + "\"}";
 
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .baseUri("https://demoqa.com")
                 .body(data)
@@ -88,6 +93,7 @@ public class BookStoreTest {
     @Severity(SeverityLevel.NORMAL)
     void displayAListOfAllBooksTest() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .baseUri("https://demoqa.com")
                 .when()
@@ -110,11 +116,12 @@ public class BookStoreTest {
     @Severity(SeverityLevel.NORMAL)
     void displayABookByISBNInTheListOfAllBooksTest() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .baseUri("https://demoqa.com")
-                .formParam("9781449325862")
+                .queryParam("ISBN", "9781449325862")
                 .when()
-                .get("/BookStore/v1/Book?ISBN=9781449325862")
+                .get("/BookStore/v1/Book")
                 .then().log().all()
                 .statusCode(200)
                 .body(notNullValue(),
@@ -136,6 +143,7 @@ public class BookStoreTest {
                 "\"collectionOfIsbns\" : [{\"isbn\":\"9781449325862\"}]}";
 
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6ImpqZmhqIiwicGFzc3dvcmQiOiJ0NDRAaTlCayIsImlhdCI6MTY0NDI1MTI0MX0.afR0yMntz6RN2SElun6vbCeLeSIcFAV6mQ0_aA_QLq8")
                 .baseUri("https://demoqa.com")
@@ -160,6 +168,7 @@ public class BookStoreTest {
                 "\"userId\":\"43b6a188-3255-4be0-86f1-1cf56de4f17b\"}";
 
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6ImpqZmhqIiwicGFzc3dvcmQiOiJ0NDRAaTlCayIsImlhdCI6MTY0NDI1MTI0MX0.afR0yMntz6RN2SElun6vbCeLeSIcFAV6mQ0_aA_QLq8")
                 .baseUri("https://demoqa.com")
