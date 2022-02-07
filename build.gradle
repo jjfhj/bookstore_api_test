@@ -22,6 +22,7 @@ allure {
 }
 
 dependencies {
+    implementation 'io.qameta.allure:allure-java-commons:2.16.1'
     //noinspection GradlePackageUpdate
     testImplementation(
             "io.rest-assured:rest-assured:4.4.0",
