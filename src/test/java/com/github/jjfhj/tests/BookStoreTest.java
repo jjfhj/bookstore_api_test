@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.*;
 
 @Layer("rest")
 @Owner("kgordienko")
@@ -96,7 +96,9 @@ public class BookStoreTest {
                 .statusCode(200)
                 .body("books", notNullValue(),
                         "books[0].isbn", is("9781449325862"),
-                        "books[0].title", is("Git Pocket Guide"));
+                        "books[0].title", is("Git Pocket Guide"),
+                        "books.findAll{it.website =~/http.*?/}.website.flatten()",
+                        hasItem("http://chimera.labs.oreilly.com/books/1230000000561/index.html"));
     }
 
     @Test
@@ -115,7 +117,8 @@ public class BookStoreTest {
                 .get("/BookStore/v1/Book?ISBN=9781449325862")
                 .then().log().all()
                 .statusCode(200)
-                .body(notNullValue())
+                .body(notNullValue(),
+                        matchesJsonSchemaInClasspath("schema/AddItemToCartTestSchema.json"))
                 .body("isbn", is("9781449325862"),
                         "title", is("Git Pocket Guide"));
     }
