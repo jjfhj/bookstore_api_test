@@ -10,9 +10,9 @@ import io.qameta.allure.*;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.*;
 
-import static com.github.jjfhj.filters.CustomLogFilter.customLogFilter;
+import static com.github.jjfhj.specs.Specs.request;
+import static com.github.jjfhj.specs.Specs.responseSpec;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
 
@@ -46,14 +46,12 @@ public class BookStoreTest {
                 "  \"password\": \"" + PASSWORD + "\"}";
 
         given()
-                .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .baseUri("https://demoqa.com")
+                .spec(request)
                 .body(data)
                 .when()
                 .post("/Account/v1/Authorized")
-                .then().log().all()
-                .statusCode(200)
+                .then()
+                .spec(responseSpec)
                 .body(is("true"));
     }
 
@@ -71,14 +69,12 @@ public class BookStoreTest {
                 "  \"password\": \"" + PASSWORD + "\"}";
 
         given()
-                .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .baseUri("https://demoqa.com")
+                .spec(request)
                 .body(data)
                 .when()
                 .post("/Account/v1/GenerateToken")
-                .then().log().all()
-                .statusCode(200)
+                .then()
+                .spec(responseSpec)
                 .body("token", notNullValue(),
                         "status", is("Success"),
                         "result", is("User authorized successfully."));
@@ -93,13 +89,11 @@ public class BookStoreTest {
     @Severity(SeverityLevel.NORMAL)
     void displayAListOfAllBooksTest() {
         given()
-                .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .baseUri("https://demoqa.com")
+                .spec(request)
                 .when()
                 .get("/BookStore/v1/Books")
-                .then().log().all()
-                .statusCode(200)
+                .then()
+                .spec(responseSpec)
                 .body("books", notNullValue(),
                         "books[0].isbn", is("9781449325862"),
                         "books[0].title", is("Git Pocket Guide"),
@@ -112,18 +106,16 @@ public class BookStoreTest {
     @Tags({@Tag("Major"), @Tag("Medium")})
     @Microservice("BookStore")
     @Feature("Список книг")
-    @Story("Метод GET /BookStore/v1/Book?ISBN=")
+    @Story("Метод GET /BookStore/v1/Book")
     @Severity(SeverityLevel.NORMAL)
     void displayABookByISBNInTheListOfAllBooksTest() {
         given()
-                .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .baseUri("https://demoqa.com")
+                .spec(request)
                 .queryParam("ISBN", "9781449325862")
                 .when()
                 .get("/BookStore/v1/Book")
-                .then().log().all()
-                .statusCode(200)
+                .then()
+                .spec(responseSpec)
                 .body(notNullValue(),
                         matchesJsonSchemaInClasspath("schema/AddItemToCartTestSchema.json"))
                 .body("isbn", is("9781449325862"),
@@ -143,14 +135,13 @@ public class BookStoreTest {
                 "\"collectionOfIsbns\" : [{\"isbn\":\"9781449325862\"}]}";
 
         given()
-                .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
+                .spec(request)
                 .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6ImpqZmhqIiwicGFzc3dvcmQiOiJ0NDRAaTlCayIsImlhdCI6MTY0NDI1MTI0MX0.afR0yMntz6RN2SElun6vbCeLeSIcFAV6mQ0_aA_QLq8")
-                .baseUri("https://demoqa.com")
                 .body(data)
                 .when()
                 .post("/BookStore/v1/Books")
-                .then().log().all()
+                .then()
+                .log().headers().and().log().body()
                 .statusCode(201)
                 .body("books[0].isbn", is("9781449325862"));
     }
@@ -168,14 +159,13 @@ public class BookStoreTest {
                 "\"userId\":\"43b6a188-3255-4be0-86f1-1cf56de4f17b\"}";
 
         given()
-                .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
+                .spec(request)
                 .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6ImpqZmhqIiwicGFzc3dvcmQiOiJ0NDRAaTlCayIsImlhdCI6MTY0NDI1MTI0MX0.afR0yMntz6RN2SElun6vbCeLeSIcFAV6mQ0_aA_QLq8")
-                .baseUri("https://demoqa.com")
                 .body(data)
                 .when()
                 .delete("/BookStore/v1/Book")
-                .then().log().all()
+                .then()
+                .log().headers().and().log().body()
                 .statusCode(204)
                 .body(is(""));
     }
