@@ -9,7 +9,8 @@ repositories {
 }
 
 def allureVersion = '2.17.2',
-    junitVersion = '5.8.2'
+    junitVersion = '5.8.2',
+    selenideVersion = '6.1.1'
 
 allure {
     version = allureVersion
@@ -31,6 +32,8 @@ dependencies {
             "org.aeonbits.owner:owner:1.0.12",
             "org.aspectj:aspectjweaver:1.9.7",
             "com.fasterxml.jackson.core:jackson-databind:2.11.2",
+            "com.codeborne:selenide:$selenideVersion",
+            "io.qameta.allure:allure-selenide:$allureVersion",
             "io.qameta.allure:allure-rest-assured:$allureVersion",
             "org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
