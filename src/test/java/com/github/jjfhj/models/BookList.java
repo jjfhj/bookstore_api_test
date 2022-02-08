@@ -13,7 +13,7 @@ public class BookList {
     @JsonProperty("publish_date")
     private String publishDate;
     private String publisher;
-    private String pages;
+    private int pages;
     private String description;
     private String website;
 
@@ -65,11 +65,11 @@ public class BookList {
         this.publisher = publisher;
     }
 
-    public String getPages() {
+    public int getPages() {
         return pages;
     }
 
-    public void setPages(String pages) {
+    public void setPages(int pages) {
         this.pages = pages;
     }
 
