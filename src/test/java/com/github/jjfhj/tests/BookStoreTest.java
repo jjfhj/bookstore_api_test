@@ -121,7 +121,7 @@ public class BookStoreTest extends TestBase {
                 .then()
                 .spec(responseSpec)
                 .body(notNullValue(),
-                        matchesJsonSchemaInClasspath("schema/AddItemToCartTestSchema.json"))
+                        matchesJsonSchemaInClasspath("schema/DisplayBookByISBNTestSchema.json"))
                 .body("isbn", is(isbn),
                         "title", is(title));
     }
