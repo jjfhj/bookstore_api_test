@@ -130,6 +130,7 @@ public class BookStoreTest extends TestBase {
     @DisplayName("Добавление и удаление книги в профиле пользователя")
     @Tags({@Tag("Blocker"), @Tag("High")})
     @Microservice("BookStore")
+    @Owner("user")
     @Feature("Список книг в профиле пользователя")
     @Story("Методы POST /BookStore/v1/Books ❘ DELETE /BookStore/v1/Book")
     @Severity(SeverityLevel.BLOCKER)
