@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
-import static com.github.jjfhj.config.Credentials.CREDENTIALS_CONFIG;
+import static com.github.jjfhj.config.App.CREDENTIALS_CONFIG;
 import static com.github.jjfhj.specs.Specs.request;
 import static com.github.jjfhj.specs.Specs.responseSpec;
 import static com.github.jjfhj.tests.TestData.*;
