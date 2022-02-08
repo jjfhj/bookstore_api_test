@@ -1,22 +1,21 @@
 package com.github.jjfhj.tests;
 
-import com.codeborne.selenide.logevents.SelenideLogger;
 import com.github.jjfhj.JiraIssue;
 import com.github.jjfhj.JiraIssues;
 import com.github.jjfhj.Layer;
 import com.github.jjfhj.Microservice;
-import com.github.jjfhj.lombok.UserRequestData;
-import com.github.jjfhj.lombok.UserResponseData;
 import com.github.jjfhj.lombok.UserToken;
 import com.github.jjfhj.models.BookListData;
 import io.qameta.allure.*;
-import io.qameta.allure.selenide.AllureSelenide;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
+import org.junit.jupiter.api.Test;
 
-import static com.github.jjfhj.config.Credentials.CREDENTIALS_CONFIG;
 import static com.github.jjfhj.specs.Specs.request;
 import static com.github.jjfhj.specs.Specs.responseSpec;
-import static io.qameta.allure.Allure.step;
+import static com.github.jjfhj.tests.TestData.USER_RESPONSE_DATA;
+import static com.github.jjfhj.tests.TestData.setUserLoginData;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -30,37 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Link(name = "Book Store", url = "https://demoqa.com/books")
 @DisplayName("Тестирование веб-приложения Book Store")
 public class BookStoreTest {
-
-    public static final UserResponseData USER_RESPONSE_DATA = new UserResponseData();
-    public static final UserRequestData USER_REQUEST_DATA = new UserRequestData();
-
-    public static final String USER_NAME = CREDENTIALS_CONFIG.userName();
-    public static final String PASSWORD = CREDENTIALS_CONFIG.password();
-
-    public static UserRequestData setUserLoginData() {
-        USER_REQUEST_DATA.setUserName(USER_NAME);
-        USER_REQUEST_DATA.setPassword(PASSWORD);
-        return USER_REQUEST_DATA;
-    }
-
-    @BeforeAll
-    static void setup() {
-        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
-
-        step("Получение токена авторизации и userId (с использованием Lombok)", () -> {
-            UserResponseData userResponseData = given()
-                    .spec(request)
-                    .body(setUserLoginData())
-                    .when()
-                    .post("/Account/v1/Login")
-                    .then()
-                    .spec(responseSpec)
-                    .extract().as(UserResponseData.class);
-
-            USER_RESPONSE_DATA.setUserId(userResponseData.getUserId());
-            USER_RESPONSE_DATA.setToken(userResponseData.getToken());
-        });
-    }
 
     @Test
     @DisplayName("Успешная генерация токена (с использованием Lombok)")
@@ -153,13 +121,13 @@ public class BookStoreTest {
     @Severity(SeverityLevel.BLOCKER)
     void addingABookToAUserProfileTest() {
 
-        String data = "{\"userId\": \"" + USER_RESPONSE_DATA.getUserId() + "\"," +
-                "\"collectionOfIsbns\" : [{\"isbn\":\"9781449325862\"}]}";
+/*        String addingData = "{\"userId\": \"" + USER_RESPONSE_DATA.getUserId() + "\"," +
+                "\"collectionOfIsbns\" : [{\"isbn\":\"9781449325862\"}]}";*/
 
         given()
                 .spec(request)
                 .header("Authorization", "Bearer " + USER_RESPONSE_DATA.getToken())
-                .body(data)
+                .body(TestData.addingData)
                 .when()
                 .post("/BookStore/v1/Books")
                 .then()
@@ -177,13 +145,13 @@ public class BookStoreTest {
     @Severity(SeverityLevel.BLOCKER)
     void removingAnAddedBookFromAUserProfileTest() {
 
-        String data = "{\"isbn\":\"9781449325862\"," +
-                "\"userId\": \"" + USER_RESPONSE_DATA.getUserId() + "\"}";
+/*        String removingData = "{\"isbn\":\"9781449325862\"," +
+                "\"userId\": \"" + USER_RESPONSE_DATA.getUserId() + "\"}";*/
 
         given()
                 .spec(request)
                 .header("Authorization", "Bearer " + USER_RESPONSE_DATA.getToken())
-                .body(data)
+                .body(TestData.removingData)
                 .when()
                 .delete("/BookStore/v1/Book")
                 .then()
