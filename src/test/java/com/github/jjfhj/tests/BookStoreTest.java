@@ -6,15 +6,20 @@ import com.github.jjfhj.JiraIssues;
 import com.github.jjfhj.Layer;
 import com.github.jjfhj.Microservice;
 import com.github.jjfhj.config.Credentials;
+import com.github.jjfhj.lombok.BookListData;
+import com.github.jjfhj.models.UserToken;
 import io.qameta.allure.*;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.*;
 
 import static com.github.jjfhj.specs.Specs.request;
 import static com.github.jjfhj.specs.Specs.responseSpec;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Layer("rest")
 @Owner("kgordienko")
@@ -30,64 +35,78 @@ public class BookStoreTest {
     @BeforeAll
     static void setup() {
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
-    }
-
-    @Test
-    @DisplayName("Успешная авторизация через UserName и Password")
-    @Tags({@Tag("Critical"), @Tag("Highest")})
-    @Microservice("Account")
-    @Feature("Авторизация")
-    @Story("Метод POST /Account/v1/Authorized")
-    @Severity(SeverityLevel.CRITICAL)
-    void authorizationViaUserNameAndPasswordTest() {
 
         String data = "{" +
                 "  \"userName\": \"" + USER_NAME + "\"," +
                 "  \"password\": \"" + PASSWORD + "\"}";
 
-        given()
-                .spec(request)
-                .body(data)
-                .when()
-                .post("/Account/v1/Authorized")
-                .then()
-                .spec(responseSpec)
-                .body(is("true"));
+        step("Получение токена авторизации и userId", () -> {
+            given()
+                    .spec(request)
+                    .body(data)
+                    .when()
+                    .post("/Account/v1/Authorized")
+                    .then()
+                    .spec(responseSpec)
+                    .body(is("true"));
+        });
     }
 
     @Test
-    @DisplayName("Успешная генерация токена")
+    @DisplayName("Успешная генерация токена (с использованием модели)")
     @Tags({@Tag("Critical"), @Tag("Highest")})
     @Microservice("Account")
     @Feature("Генерация токена")
     @Story("Метод POST /Account/v1/GenerateToken")
     @Severity(SeverityLevel.CRITICAL)
-    void tokenGenerationTest() {
+    void tokenGenerationWithModelTest() {
 
-        String data = "{" +
+        String userData = "{" +
                 "  \"userName\": \"" + USER_NAME + "\"," +
                 "  \"password\": \"" + PASSWORD + "\"}";
 
-        given()
+        UserToken data = given()
                 .spec(request)
-                .body(data)
+                .body(userData)
                 .when()
                 .post("/Account/v1/GenerateToken")
                 .then()
                 .spec(responseSpec)
-                .body("token", notNullValue(),
-                        "status", is("Success"),
-                        "result", is("User authorized successfully."));
+                .extract().as(UserToken.class);
+
+        assertThat(data.getToken()).isNotNull();
+        assertThat(data.getStatus()).isEqualTo("Success");
+        assertThat(data.getResult()).isEqualTo("User authorized successfully.");
     }
 
     @Test
-    @DisplayName("Отображение списка всех книг")
+    @DisplayName("Отображение списка всех книг (с использованием Lombok)")
     @Tags({@Tag("Major"), @Tag("Medium")})
     @Microservice("BookStore")
     @Feature("Список книг")
     @Story("Метод GET /BookStore/v1/Books")
     @Severity(SeverityLevel.NORMAL)
-    void displayAListOfAllBooksTest() {
+    void displayAListOfAllBooksWithLombokModelTest() {
+        BookListData data = given()
+                .spec(request)
+                .when()
+                .get("/BookStore/v1/Books")
+                .then()
+                .spec(responseSpec)
+                .extract().as(BookListData.class);
+
+        assertEquals("9781449325862", data.getBooks()[0].getIsbn());
+        assertEquals("Git Pocket Guide", data.getBooks()[0].getTitle());
+    }
+
+    @Test
+    @DisplayName("Отображение списка всех книг (с использованием Groovy)")
+    @Tags({@Tag("Major"), @Tag("Medium")})
+    @Microservice("BookStore")
+    @Feature("Список книг")
+    @Story("Метод GET /BookStore/v1/Books")
+    @Severity(SeverityLevel.NORMAL)
+    void displayAListOfAllBooksWithGroovyTest() {
         given()
                 .spec(request)
                 .when()
@@ -95,8 +114,6 @@ public class BookStoreTest {
                 .then()
                 .spec(responseSpec)
                 .body("books", notNullValue(),
-                        "books[0].isbn", is("9781449325862"),
-                        "books[0].title", is("Git Pocket Guide"),
                         "books.findAll{it.website =~/http.*?/}.website.flatten()",
                         hasItem("http://chimera.labs.oreilly.com/books/1230000000561/index.html"));
     }
