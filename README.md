@@ -1,7 +1,7 @@
 # Проект по автоматизации тестирования API для веб-приложения [Book Store](https://demoqa.com/books)
 
 <p align="center">
-<img width="35%" title="Tools QA" src="images/logo/tools-qa.png">
+<img width="45%" title="Book Store" src="images/logo/book-store.png">
 </p>
 
 ## <img width="4%" title="Contents" src="images/logo/contents.png"> Содержание
