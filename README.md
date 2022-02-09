@@ -93,7 +93,7 @@ gradle clean ${TASK}
 > <summary> :point_left: <code>api.properties</code> </summary>
 >
 > **В файле должны быть расположены:**
-> + <code>apiURL</code> – адрес сервера, на котором будут запускаться тесты
+> + <code>apiURL</code> – адрес сервера, который будет использоваться в тестах
 > </details>
 >
 > </details>
