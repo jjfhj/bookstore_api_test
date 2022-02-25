@@ -4,8 +4,6 @@ import com.github.jjfhj.JiraIssue;
 import com.github.jjfhj.JiraIssues;
 import com.github.jjfhj.Layer;
 import com.github.jjfhj.Microservice;
-import com.github.jjfhj.lombok.UserRequestData;
-import com.github.jjfhj.lombok.UserResponseData;
 import com.github.jjfhj.lombok.UserToken;
 import com.github.jjfhj.models.BookListData;
 import io.qameta.allure.*;
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
-import static com.github.jjfhj.config.App.CREDENTIALS_CONFIG;
 import static com.github.jjfhj.specs.Specs.request;
 import static com.github.jjfhj.specs.Specs.responseSpec;
 import static com.github.jjfhj.tests.TestData.*;
@@ -31,18 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Link(name = "Book Store", url = "https://demoqa.com/books")
 @DisplayName("Тестирование веб-приложения Book Store")
 public class BookStoreTest extends TestBase {
-
-    public static final UserResponseData USER_RESPONSE_DATA = new UserResponseData();
-    public static final UserRequestData USER_REQUEST_DATA = new UserRequestData();
-
-    public static final String USER_NAME = CREDENTIALS_CONFIG.userName();
-    public static final String PASSWORD = CREDENTIALS_CONFIG.password();
-
-    public static UserRequestData setUserLoginData() {
-        USER_REQUEST_DATA.setUserName(USER_NAME);
-        USER_REQUEST_DATA.setPassword(PASSWORD);
-        return USER_REQUEST_DATA;
-    }
 
     @Test
     @DisplayName("Успешная генерация токена (с использованием Lombok)")
@@ -135,14 +120,10 @@ public class BookStoreTest extends TestBase {
     @Story("Методы POST /BookStore/v1/Books ❘ DELETE /BookStore/v1/Book")
     @Severity(SeverityLevel.BLOCKER)
     void addingAndRemovingABookInAUserProfileTest() {
-
-/*        String addingData = "{\"userId\": \"" + USER_RESPONSE_DATA.getUserId() + "\"," +
-                "\"collectionOfIsbns\" : [{\"isbn\":\"9781449325862\"}]}";*/
-
         given()
                 .spec(request)
                 .header("Authorization", "Bearer " + USER_RESPONSE_DATA.getToken())
-                .body(addingData)
+                .body(setBookDataForAdding())
                 .when()
                 .post("/BookStore/v1/Books")
                 .then()
@@ -150,13 +131,10 @@ public class BookStoreTest extends TestBase {
                 .statusCode(201)
                 .body("books[0].isbn", is(isbn));
 
-/*        String removingData = "{\"isbn\":\"9781449325862\"," +
-                "\"userId\": \"" + USER_RESPONSE_DATA.getUserId() + "\"}";*/
-
         given()
                 .spec(request)
                 .header("Authorization", "Bearer " + USER_RESPONSE_DATA.getToken())
-                .body(removingData)
+                .body(setBookDataForRemoving())
                 .when()
                 .delete("/BookStore/v1/Book")
                 .then()
