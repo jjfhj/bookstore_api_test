@@ -1,9 +1,9 @@
 package com.github.jjfhj.tests;
 
-import com.github.jjfhj.JiraIssue;
-import com.github.jjfhj.JiraIssues;
-import com.github.jjfhj.Layer;
-import com.github.jjfhj.Microservice;
+import com.github.jjfhj.annotations.JiraIssue;
+import com.github.jjfhj.annotations.JiraIssues;
+import com.github.jjfhj.annotations.Layer;
+import com.github.jjfhj.annotations.Microservice;
 import com.github.jjfhj.lombok.UserToken;
 import com.github.jjfhj.models.BookListData;
 import io.qameta.allure.*;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.github.jjfhj.specs.Specs.request;
 import static com.github.jjfhj.specs.Specs.responseSpec;
-import static com.github.jjfhj.tests.TestData.*;
+import static com.github.jjfhj.data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

@@ -1,4 +1,4 @@
-package com.github.jjfhj.tests;
+package com.github.jjfhj.data;
 
 import com.github.jjfhj.lombok.*;
 

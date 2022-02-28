@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 
 import static com.github.jjfhj.specs.Specs.request;
 import static com.github.jjfhj.specs.Specs.responseSpec;
-import static com.github.jjfhj.tests.TestData.USER_RESPONSE_DATA;
-import static com.github.jjfhj.tests.TestData.setUserLoginData;
+import static com.github.jjfhj.data.TestData.USER_RESPONSE_DATA;
+import static com.github.jjfhj.data.TestData.setUserLoginData;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 
